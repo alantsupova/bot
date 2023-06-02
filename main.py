@@ -7,7 +7,7 @@ bot=telebot.TeleBot(token)
 
 @bot.message_handler(commands=["start"])
 def start_message(message):
-    bot.send_message(message.chat.id, 'Привет, я - бот для анализа эмоционального окраса фото. Пришли фотографию и я проанализирую её')
+    bot.send_message(message.chat.id, 'Привет, я - бот модератор фото. Пришли фотографию и я проанализирую её')
 
 @bot.message_handler(content_types=["photo"])
 def emo_analyze(message):
@@ -20,7 +20,12 @@ def emo_analyze(message):
             res = analyze("image.jpg")
         except Exception:
             res = 'Ошибка'
-    bot.send_message(message.chat.id, res)
+    if res.startswith('Positive'):
+        bot.send_message(message.chat.id, 'Милая картинка) Продолжай в том же духе')
+    elif res.startswith('Negative'):
+        bot.send_message(message.chat.id, 'Картинка содержит неблагоприятный контент')
+    else:
+        bot.send_message(message.chat.id, 'Картинка нейтральна')
 
 if __name__ == '__main__':
     bot.infinity_polling()
